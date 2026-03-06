@@ -116,6 +116,7 @@
       return [session, setSession, update];
     };
 
+    // PDF für Ergebnisse
     const generatePDF = (session, userName = null) => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -167,6 +168,167 @@
         });
       }
       doc.save(`VentureChallenge_${session.code}.pdf`);
+    };
+
+    // PDF Anleitung für Teilnehmer
+    const generateParticipantGuidePDF = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+
+      doc.setFontSize(22); doc.setTextColor(78, 205, 196);
+      doc.text('VENTURE CHALLENGE', 105, y, { align: 'center' }); y += 10;
+      doc.setFontSize(16); doc.setTextColor(100);
+      doc.text('Anleitung fuer Teilnehmer', 105, y, { align: 'center' }); y += 20;
+
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('Was ist die Venture Challenge?', 20, y); y += 8;
+      doc.setFontSize(10); doc.setTextColor(60);
+      const intro = 'Die Venture Challenge ist ein interaktives Investment-Planspiel. Du schluepfst in die Rolle eines Investors und entscheidest, welche Unternehmen (Teams) das groesste Potenzial haben.';
+      const introLines = doc.splitTextToSize(intro, 170);
+      introLines.forEach(line => { doc.text(line, 20, y); y += 5; }); y += 10;
+
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('So funktioniert es:', 20, y); y += 10;
+
+      const steps = [
+        '1. REGISTRIERUNG',
+        '   - Oeffne den Link oder gib den Session-Code ein',
+        '   - Waehle einen Nutzernamen und ein Kennwort',
+        '   - Tritt einem Team/Unternehmen bei',
+        '',
+        '2. INVESTMENT-PHASE',
+        '   - Du erhaeltst ein virtuelles Budget von 1.000 EUR',
+        '   - Verteile dein Budget auf verschiedene Teams',
+        '   - Du musst in mindestens 2 verschiedene Teams investieren',
+        '   - Begruende jede Investitionsentscheidung',
+        '',
+        '3. AUFLOESUNG',
+        '   - Der Dozent enthuellt die Ergebnisse',
+        '   - Teams werden nach erhaltenem Kapital gerankt',
+        '',
+        '4. AUSZAHLUNG',
+        '   - 1. Platz: Dein Investment x 5 (500% Rendite!)',
+        '   - 2. Platz: Dein Investment x 1 (Einsatz zurueck)',
+        '   - Alle anderen: Investment verloren',
+        '',
+        '5. GEWINNER',
+        '   - Wer am Ende das meiste Geld hat, gewinnt!'
+      ];
+
+      doc.setFontSize(10);
+      steps.forEach(step => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setTextColor(step.startsWith('   ') ? 80 : 0);
+        doc.text(step, 20, y); y += 5;
+      }); y += 10;
+
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('Tipps fuer eine gute Strategie:', 20, y); y += 8;
+      doc.setFontSize(10); doc.setTextColor(60);
+      const tips = [
+        '- Hoere dir alle Pitches genau an',
+        '- Diversifiziere: Setze nicht alles auf ein Team',
+        '- Bedenke: Viele werden auf den Favoriten setzen',
+        '- Manchmal gewinnt der Underdog!'
+      ];
+      tips.forEach(tip => { doc.text(tip, 20, y); y += 5; }); y += 10;
+
+      doc.setFontSize(12); doc.setTextColor(78, 205, 196);
+      doc.text('Viel Erfolg bei der Venture Challenge!', 105, y, { align: 'center' });
+
+      doc.save('VentureChallenge_Anleitung_Teilnehmer.pdf');
+    };
+
+    // PDF Anleitung für Spielleiter
+    const generateInstructorGuidePDF = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+
+      doc.setFontSize(22); doc.setTextColor(233, 69, 96);
+      doc.text('VENTURE CHALLENGE', 105, y, { align: 'center' }); y += 10;
+      doc.setFontSize(16); doc.setTextColor(100);
+      doc.text('Anleitung fuer Spielleiter', 105, y, { align: 'center' }); y += 20;
+
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('Uebersicht', 20, y); y += 8;
+      doc.setFontSize(10); doc.setTextColor(60);
+      const intro = 'Die Venture Challenge ist ein gamifiziertes Lernspiel fuer BWL-Kurse. Studierende pitchen ihre Geschaeftsideen und investieren anschliessend virtuelles Kapital in die ueberzeugendsten Konzepte.';
+      const introLines = doc.splitTextToSize(intro, 170);
+      introLines.forEach(line => { doc.text(line, 20, y); y += 5; }); y += 10;
+
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('Spielablauf:', 20, y); y += 10;
+
+      const phases = [
+        'PHASE 1: VORBEREITUNG',
+        '   - Neues Spiel erstellen (Kursname, Teilnehmerzahl)',
+        '   - Optional: Gruppennamen anpassen',
+        '   - Session-Code an Studierende verteilen',
+        '',
+        'PHASE 2: REGISTRIERUNG',
+        '   - Studierende registrieren sich mit dem Code',
+        '   - Jeder waehlt ein Team/Unternehmen',
+        '   - Warten bis alle registriert sind',
+        '',
+        'PHASE 3: PITCHES (offline)',
+        '   - Jedes Team praes. seine Geschaeftsidee',
+        '   - Empfohlen: 5-10 Min. pro Team',
+        '',
+        'PHASE 4: INVESTMENT',
+        '   - Investment-Phase im System starten',
+        '   - Studierende verteilen 1.000 EUR Budget',
+        '   - Jeder muss mind. 2 Teams waehlen',
+        '   - Warten bis alle investiert haben',
+        '',
+        'PHASE 5: AUFLOESUNG',
+        '   - Spannung aufbauen: Plaetze einzeln enthuellen',
+        '   - Vom letzten zum ersten Platz',
+        '',
+        'PHASE 6: ERGEBNISSE',
+        '   - Ergebnisse fuer Teilnehmer freigeben',
+        '   - PDF-Export fuer Dokumentation'
+      ];
+
+      doc.setFontSize(10);
+      phases.forEach(phase => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setTextColor(phase.startsWith('   ') ? 80 : 0);
+        doc.text(phase, 20, y); y += 5;
+      }); y += 10;
+
+      if (y > 240) { doc.addPage(); y = 20; }
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('Auszahlungslogik:', 20, y); y += 8;
+      doc.setFontSize(10); doc.setTextColor(60);
+      doc.text('1. Platz: Investment x 5 (500% Rendite)', 20, y); y += 5;
+      doc.text('2. Platz: Investment x 1 (Einsatz zurueck)', 20, y); y += 5;
+      doc.text('Andere Plaetze: Investment verloren', 20, y); y += 10;
+
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('Admin-Funktionen:', 20, y); y += 8;
+      doc.setFontSize(10); doc.setTextColor(60);
+      const features = [
+        '- Teilnehmer verwalten (loeschen, Passwort reset)',
+        '- Investments einsehen und korrigieren',
+        '- Gruppennamen jederzeit aendern',
+        '- PDF-Export der Ergebnisse'
+      ];
+      features.forEach(f => { doc.text(f, 20, y); y += 5; }); y += 10;
+
+      doc.setFontSize(14); doc.setTextColor(0);
+      doc.text('Technische Hinweise:', 20, y); y += 8;
+      doc.setFontSize(10); doc.setTextColor(60);
+      const tech = [
+        '- Daten werden im Browser gespeichert (localStorage)',
+        '- Alle muessen denselben Browser/Geraet nutzen',
+        '- Oder: Auf Webserver hosten (z.B. GitHub Pages)',
+        '- Live-Sync funktioniert zwischen Browser-Tabs'
+      ];
+      tech.forEach(t => { doc.text(t, 20, y); y += 5; });
+
+      doc.save('VentureChallenge_Anleitung_Spielleiter.pdf');
     };
 
     // ============ START SCREEN ============
@@ -221,18 +383,33 @@
             <p style={{ color: '#a0a0a0', fontSize: '1.1rem', marginBottom: '2rem' }}>Gamifiziertes BWL Investment-Lernspiel</p>
             
             {!showLogin && (
-              <div style={{ display: 'grid', gap: '1rem' }}>
-                <button className="btn btn-primary" style={{ padding: '1.5rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }} onClick={() => onSelectRole('admin-new')}>
-                  <span style={{ fontSize: '2rem' }}>👨‍🏫</span>
-                  <div style={{ textAlign: 'left' }}><div>Neues Spiel erstellen</div><div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Als Spielleiter</div></div>
-                </button>
-                <button className="btn" style={{ padding: '1.5rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'linear-gradient(135deg, #1e1e30, #252540)', border: '2px solid #4ECDC4' }} onClick={() => onSelectRole('student-register')}>
-                  <span style={{ fontSize: '2rem' }}>✏️</span>
-                  <div style={{ textAlign: 'left', color: '#fff' }}><div>Neu registrieren</div><div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Erstmalig beitreten</div></div>
-                </button>
-                <button className="btn btn-secondary" style={{ padding: '1rem' }} onClick={() => setShowLogin('student')}>👤 Als Teilnehmer einloggen</button>
-                <button className="btn btn-secondary" style={{ padding: '1rem' }} onClick={() => setShowLogin('admin')}>🔑 Als Spielleiter einloggen</button>
-              </div>
+              <>
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  <button className="btn btn-primary" style={{ padding: '1.5rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }} onClick={() => onSelectRole('admin-new')}>
+                    <span style={{ fontSize: '2rem' }}>👨‍🏫</span>
+                    <div style={{ textAlign: 'left' }}><div>Neues Spiel erstellen</div><div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Als Spielleiter</div></div>
+                  </button>
+                  <button className="btn" style={{ padding: '1.5rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', background: 'linear-gradient(135deg, #1e1e30, #252540)', border: '2px solid #4ECDC4' }} onClick={() => onSelectRole('student-register')}>
+                    <span style={{ fontSize: '2rem' }}>✏️</span>
+                    <div style={{ textAlign: 'left', color: '#fff' }}><div>Neu registrieren</div><div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Erstmalig beitreten</div></div>
+                  </button>
+                  <button className="btn btn-secondary" style={{ padding: '1rem' }} onClick={() => setShowLogin('student')}>👤 Als Teilnehmer einloggen</button>
+                  <button className="btn btn-secondary" style={{ padding: '1rem' }} onClick={() => setShowLogin('admin')}>🔑 Als Spielleiter einloggen</button>
+                </div>
+
+                {/* PDF Download Buttons */}
+                <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #333' }}>
+                  <p style={{ color: '#666', fontSize: '0.85rem', marginBottom: '1rem' }}>📄 Anleitungen herunterladen:</p>
+                  <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <button onClick={generateParticipantGuidePDF} style={{ padding: '0.6rem 1rem', background: 'rgba(78,205,196,0.2)', border: '1px solid #4ECDC4', borderRadius: '8px', color: '#4ECDC4', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}>
+                      📥 Anleitung Teilnehmer
+                    </button>
+                    <button onClick={generateInstructorGuidePDF} style={{ padding: '0.6rem 1rem', background: 'rgba(233,69,96,0.2)', border: '1px solid #e94560', borderRadius: '8px', color: '#e94560', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}>
+                      📥 Anleitung Spielleiter
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
 
             {showLogin === 'student' && (
